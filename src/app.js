@@ -5,10 +5,15 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+import userRoutes from './routes/user.routes.js'
+import watchlistRoutes from './routes/watchlist.routes.js'
+import movieRoutes from './routes/movie.routes.js'
+import errorHandler from './middlewares/errorHandler.js'
+
 const app = express()
 
 app.use(cors({
-  origin: process.env.CLIENT_URL,  // Vite's default port
+  origin: 'http://localhost:5173',
   credentials: true
 }))
 
@@ -23,9 +28,16 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Server is running' })
 })
 
-export default app
-import User from './schemas/User.model.js'
-import Watchlist from './schemas/Watchlist.model.js'
-import CachedMovie from './schemas/Cachedmovie.model.js'
+app.use('/api/auth', userRoutes)
+app.use('/api/watchlist', watchlistRoutes)
+app.use('/api/movies', movieRoutes)
 
-console.log('Models loaded:', User.modelName, Watchlist.modelName, CachedMovie.modelName)
+app.use('*splat', (req, res) => {
+  res.status(404).json({ success: false, message: 'Route not found' })
+})
+
+app.use(errorHandler)
+
+export default app
+
+
