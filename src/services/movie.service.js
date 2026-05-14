@@ -5,7 +5,8 @@ import ApiError from '../utils/apiError.js'
 
 
 const tmdb = axios.create({
-  baseURL: 'https://api.themoviedb.org/3'
+  baseURL: 'https://api.themoviedb.org/3',
+  timeout:10000
 })
 
 tmdb.interceptors.request.use((config) => {
@@ -94,7 +95,7 @@ const movieService = {
     }
   },
 
-  async getMovieVideos(tmdbId) {
+    async getMovieVideos(tmdbId) {
     try {
       const { data } = await tmdb.get(`/movie/${tmdbId}/videos`)
       const trailer = data.results.find(
@@ -104,8 +105,19 @@ const movieService = {
     } catch (error) {
       throw new ApiError(500, 'Failed to fetch movie videos')
     }
+  },
+
+  async getRecommendations(tmdbId) {
+    const id = Number(tmdbId)
+    try {
+      const { data } = await tmdb.get(`/movie/${id}/recommendations`)
+      return data
+    } catch (error) {
+      throw new ApiError(500, 'Failed to fetch recommendations')
+    }
   }
 
 }
 
 export default movieService
+

@@ -80,6 +80,15 @@ const movieController = {
     } catch (error) {
       next(error)
     }
+  },
+  async getRecommendations(req, res, next) {
+    try {
+      const { id } = req.params
+      const data = await movieService.getRecommendations(id)
+      return responseFormatter.success(res, data, 'Recommendations fetched')
+    } catch (error) {
+      next(error)
+    }
   }
 
 }
